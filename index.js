@@ -1,8 +1,8 @@
 const express = require('express')
 //* Cors nos permite hacer solicitudes entre dominios, ejemplo una peticion fetch a nuestro backend
 const cors = require('cors');
-const userRouter = require('./Routes/userRoutes')
-const productRouter = require('./Routes/productRoutes')
+const userRouter = require('./Routes/userRoutes');
+const productRouter = require('./Routes/productRoutes');
 
 //Variables de entorno
 
@@ -24,6 +24,6 @@ app.use(userRouter)
 app.use(productRouter)
 
 
-const puerto = process.env.PORT 
+const puerto = process.env.PORT; 
 
 app.listen(puerto, () => console.log(`Conectado en puerto ${puerto}!`) )

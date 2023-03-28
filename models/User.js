@@ -5,14 +5,12 @@ const jwt = require('jsonwebtoken');
 const userSchema = new mongoose.Schema({
     firstname: {
         type: String,
-        required: true,
         default: "Nombre no señalado",
         trim: true,
         lowercase: true
     },
     lastname: {
         type: String,
-        required: true,
         default: "Apellido no señalado",
         trim: true,
         lowercase: true
@@ -26,9 +24,6 @@ const userSchema = new mongoose.Schema({
         type: Number,
         min: 16,
         max: 90
-    },
-    newsletter: {
-        type: Boolean,
     },
     favoriteProducts: [
         {
@@ -66,11 +61,10 @@ userSchema.methods.generateToken = function() {
 
     const payload = {
         id: this._id,
-        firstname: this.firstname,
         email: this.email
     }
 
-    const token = jwt.sign(payload, process.env.SECRET);
+    const token = jwt.sign(payload, process.env.SECRET, {expiresIn: 360000});
     return token;
 }
 

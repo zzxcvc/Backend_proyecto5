@@ -25,9 +25,10 @@ const createUser = async(req, res) => {
     }  
 }
 
+//* Admin functions
 const getUsers = async(req, res) => {
     try {
-        const users = await User.find().populate('favoriteProducts');
+        const users = await User.find().populate('favoriteProducts').select("-password");
         res.json({ success: true, users })
     } catch (error) {
         res.json({ success: false, message: error.message })
@@ -53,11 +54,24 @@ const deleteUser = async(req, res) => {
 }
 
 const editUser = async(req, res) => {
+    //* obtengo id desde el token
+    const { id } = req.auth
+    //* Lo que envio en la solicitud
+    const updateUser = req.body
+
     try {
-        const paramsId = req.params.id
-        const authId = req.auth.id
-        console.log(authId)
-        const result = await User.findByIdAndUpdate(authId, req.body, {new: true});
+
+        //* creamos una busqueda para validar que no exista un email ya creado o no sea el mismo
+
+        const emails = await User.find()
+
+        emails.forEach(user => {
+            if(user.email === updateUser.email){
+                throw new Error('Email en uso')
+            }
+        })
+        
+        const result = await User.findByIdAndUpdate(id, updateUser, {new: true}).select("-password -salt");
             
         console.log(result)
             
@@ -65,18 +79,32 @@ const editUser = async(req, res) => {
             throw new Error("Usuario no existe, imposible de editar!")
         }
 
-        if(paramsId !== authId){
-            throw new Error('No puedes editar, por que no eres el usuario de la cuenta!')
-        }
         
-        if(req.auth.email === result.email){
-            throw new Error("Email en uso!!!")
-        }
+        // if(req.auth.email === result.email){
+        //     throw new Error("Email en uso!!!")
+        // }
 
-        res.json({success: true, message: "Usuario editado con exito!!"})
+        res.json({success: true, message: "Usuario editado con exito!!", info: result})
 
     } catch (error) {
-        res.json({success: false, message: error.message})
+        res.status(500).json({success: false, message: error.message})
+    }
+}
+
+const getUserVerify = async(req, res) => {
+    try {
+        const { id } = req.auth;
+
+        const user = await User.findById(id).populate('favoriteProducts').select("-password -salt");
+
+        res.json({
+            success: true,
+            msg: `Informacion de: ${user.email}`,
+            info: user
+        })
+
+    } catch (error) {
+        res.status(500).json({success: false, message: error.message})
     }
 }
 
@@ -102,4 +130,4 @@ const signIn = async(req, res) => {
     }
 }
 
-module.exports = { createUser, getUsers, deleteUser, editUser, signIn }
+module.exports = { createUser, getUsers, deleteUser, editUser, signIn, getUserVerify }

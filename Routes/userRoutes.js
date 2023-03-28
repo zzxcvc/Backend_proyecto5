@@ -1,5 +1,5 @@
 const express = require('express');
-const {createUser, getUsers, deleteUser, editUser, signIn} = require('../controllers/user.controller');
+const {createUser, getUsers, deleteUser, editUser, signIn, getUserVerify} = require('../controllers/user.controller');
 const auth = require('../Middlewares/auth')
 const userRouter = express.Router();
 
@@ -10,9 +10,15 @@ userRouter.route('/user')
 
 userRouter.route('/user/:id')
     .delete(deleteUser)
-    .put(auth, editUser)
+    
 
 userRouter.route('/user/signin')
     .post(signIn)
+    
+userRouter.route('/user/verify-user')
+    .get(auth, getUserVerify)
+
+userRouter.route('/user/my-profile')
+    .put(auth, editUser)
 
 module.exports = userRouter;

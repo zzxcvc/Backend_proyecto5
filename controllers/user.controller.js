@@ -1,5 +1,5 @@
 
-const User = require('../models/User');
+const User = require('../models/User'); //importa los schema de solo los usuarios.
 
 
 const createUser = async(req, res) => {
@@ -9,16 +9,16 @@ const createUser = async(req, res) => {
         
         if(user){
             throw new Error('Email in use!!')
-        } 
+        } //si existe el usuario que me encontraste entonces le da un error
 
         //* Guardar info en nuestra base de datos
         const newUser = new User(req.body);
         newUser.hashPassword(req.body.password)
 
-        await newUser.save() //* guarda en mongo atlas
+        await newUser.save() //* esperamos a que guarde en mongo atlas
 
         
-        res.json({success: true, message: "User created successfully!", id: newUser._id, token: newUser.generateToken()}) 
+        res.json({success: true, message: "User created successfully!", id: newUser._id, token: newUser.generateToken()})  //esperamos la respuesta
 
     } catch (error) {
         res.json({ success: false, message: error.message })
@@ -34,13 +34,14 @@ const getUsers = async(req, res) => {
         res.json({ success: false, message: error.message })
     }   
 }
+//getUser para obtener la informacion de los usuarios, populamos el favoriteproducts, para que me muestre el objeto como tal a traves de un ID.
 
 const deleteUser = async(req, res) => {
     try {
         console.log(req.params)
         const { id } = req.params;
         const result = await User.findByIdAndDelete(id);
-
+        //esperamos a que encuentre el usuario con el ID para posteriormente eliminarlo.
         if(!result){
             throw new Error("Usuario no existe, imposible de eliminar!")
         }
@@ -117,7 +118,7 @@ const signIn = async(req, res) => {
             throw new Error('User not register!!')
         }
 
-        const validate = user.hashValidation(password, user.salt, user.password)
+        const validate = user.hashValidation(password, user.salt, user.password) //todo proveniente de la base de datos, para verificar si la contraseña que ingreso el usuario es correcta
 
         if(!validate){
             throw new Error('Email o contraseña incorrecta!')

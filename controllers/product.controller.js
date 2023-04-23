@@ -1,10 +1,11 @@
-const Product = require('../models/Product');
-const User = require('../models/User');
+const Product = require('../models/Product');//Llegan los Schema desde la carpeta models, tanto los schema productos como los schemas usuarios. pasamos el schema user para saber si el usuario esta conectado y si tiene el rol de administrador para poder crear editar o eliminar un producto. 
+const User = require('../models/User'); 
 
 
 
 //Publico
 
+//tenemos una funcion que es async donde recibe una request (solicitud) y una response (recordar que: las solicitudes get, post, put... deben dar una respuesta). Envolvemos todo en un try y un catch, ya que si la solicitud ocurre con exito se devuelvo el codigo que esta señalado en el try, de lo contrario aparecera el mensaje realizado en el catch.
 const getProducts = async(req, res) => {
     try {
         const products =  await Product.find()
@@ -30,6 +31,8 @@ const getProductById = async(req,res) => {
 
 //Admin
 
+
+
 const createProduct = async(req, res) => {
     try {
         const user = await User.findById(req.auth.id)
@@ -37,15 +40,18 @@ const createProduct = async(req, res) => {
         if(!user.isAdmin){
             throw new Error('No tienes acceso para crear productos!')
         }
+        // tenemos una const que le llamamos user la cual esta esperando a que se encuentre la informacion con respecto al id del usuario (sacado en el schema) a traves del payload del token (auth para decodificarlo). si no es administrador entonces se le muestra el error.
 
         const newProduct = new Product(req.body);
         await newProduct.save();
         
-        res.json({success: true, message: "Se ha creado un nuevo producto", productId: newProduct._id })
+        res.json({success: true, message: "Se ha creado un nuevo producto", productId: newProduct._id }) //si la persona es administrador, se crea el producto.
     } catch (error) {
         res.json({success: false, message: error.message})
     }
 }
+
+
 
 const editProduct = async(req, res) => {
 

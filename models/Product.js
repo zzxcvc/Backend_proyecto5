@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-
+//Schema del producto:
 const productSchema = new mongoose.Schema(
   {
     name: {
@@ -33,6 +33,6 @@ const productSchema = new mongoose.Schema(
   }
 );
 
-const Product = mongoose.model("product", productSchema);
+const Product = mongoose.model("product", productSchema); //exportamos los schemas productos los cuales llegaran a los controladores de producto.
 
 module.exports = Product;

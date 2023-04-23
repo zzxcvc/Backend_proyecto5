@@ -31,8 +31,6 @@ const getProductById = async(req,res) => {
 
 //Admin
 
-
-
 const createProduct = async(req, res) => {
     try {
         const user = await User.findById(req.auth.id)
